@@ -13,7 +13,7 @@ for arg in "$@"; do
         --help|-h)
             echo "Usage: $0 [--json]"
             echo "  --json    Output results in JSON format"
-            echo "  --help    Show help message"
+            echo "  --help    Show this help message"
             exit 0
             ;;
         *)
