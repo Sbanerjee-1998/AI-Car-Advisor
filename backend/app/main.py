@@ -3,16 +3,17 @@ from __future__ import annotations
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.agents.advisor import AdvisorService
+from backend.app.agents.provider import GeminiProvider
 from backend.app.api import auth, calculators, cars, chats, compare, errors, favourites, health
-from backend.app.config import ROOT_DIR, Settings, settings
+from backend.app.config import ROOT_DIR, settings
 from backend.app.database.base import Base
 from backend.app.database.session import create_database
-from backend.app.services.catalog import CatalogService
 from backend.app.schemas.errors import AppError
-from fastapi.exceptions import RequestValidationError
+from backend.app.services.catalog import CatalogService
 
 
 def create_app(database_url: str | None = None, catalog_dir: str | None = None) -> FastAPI:
@@ -27,8 +28,15 @@ def create_app(database_url: str | None = None, catalog_dir: str | None = None) 
     app.state.SessionLocal = session_local
     app.state.settings = app_settings
     app.state.catalog = catalog
-    app.state.advisor = AdvisorService(catalog)
-    app.add_middleware(CORSMiddleware, allow_origins=[app_settings.frontend_origin], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
+    app.state.gemini = GeminiProvider(app_settings)
+    app.state.advisor = AdvisorService(catalog, app.state.gemini)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[app_settings.frontend_origin],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     app.add_exception_handler(AppError, errors.app_error_handler)
     app.add_exception_handler(RequestValidationError, errors.validation_error_handler)
     app.add_exception_handler(Exception, errors.unexpected_error_handler)

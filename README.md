@@ -22,3 +22,17 @@ npm --prefix frontend run dev
 ```
 
 The API runs at `http://localhost:8000`; the Vite workspace runs at `http://localhost:5173`. Gemini is optional for local deterministic development. See [the quickstart](specs/001-build-ai-car-advisor/quickstart.md) and [the architecture notes](docs/architecture.md) for the full workflow.
+
+## GitHub Pages
+
+The frontend can be deployed to GitHub Pages by the workflow in
+`.github/workflows/pages.yml`. In the repository settings, set Pages' source to
+GitHub Actions. The published frontend URL is:
+`https://Sbanerjee-1998.github.io/AI-Car-Advisor/`.
+
+GitHub Pages hosts only the static React frontend. The FastAPI backend, SQLite
+database, Gemini key, and MCP server must run on a separate service. Set the
+repository variable `VITE_API_BASE_URL` to the public backend origin before the
+Pages build. Configure the backend's `FRONTEND_ORIGIN` to the Pages origin and
+use a production-safe cross-origin session configuration before relying on
+authentication from the hosted frontend.
