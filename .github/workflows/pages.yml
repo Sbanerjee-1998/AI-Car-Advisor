@@ -32,7 +32,11 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        run: npm --prefix frontend ci --no-audit --no-fund
+        run: >-
+          npm --prefix frontend ci --no-audit --no-fund --prefer-offline
+          --fetch-retries=5 --fetch-retry-factor=2
+          --fetch-retry-mintimeout=1000 --fetch-retry-maxtimeout=20000
+          --loglevel=verbose
 
       - name: Build frontend
         run: npm --prefix frontend run build
