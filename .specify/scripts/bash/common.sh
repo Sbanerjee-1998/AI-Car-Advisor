@@ -303,12 +303,12 @@ PY
             local awk_separator
             awk_separator=$(awk '
                 function keyval(d, name,   v) {
-                    if (match(d, "\\\"" name "\\\"[ \\t\\r\\n]*:[ \\t\\r\\n]*\\\"[^\\\"]*\\\"")) {
-                        v=substr(d,RSTART,RLENGTH); sub(/^.*:[ \\t\\r\\n]*\"/,"",v); sub(/\"$/,"",v); return v
+                    if (match(d, "\"" name "\"[ \t\r\n]*:[ \t\r\n]*\"[^\"]*\"")) {
+                        v=substr(d,RSTART,RLENGTH); sub(/^.*:[ \t\r\n]*"/,"",v); sub(/"$/,"",v); return v
                     }
                     return ""
                 }
-                { doc = doc $0 "\\n" }
+                { doc = doc $0 "\n" }
                 END {
                     key=keyval(doc,"default_integration"); if (key=="") key=keyval(doc,"integration")
                     sep="."
@@ -317,7 +317,7 @@ PY
                         if (match(doc, /"integration_settings"[ \t\r\n]*:[ \t\r\n]*[{]/)) {
                             settings=substr(doc, RSTART+RLENGTH-1)
                         }
-                        if (match(settings, "\\\"" key "\\\"[ \\t\\r\\n]*:[ \\t\\r\\n]*[{]")) {
+                        if (match(settings, "\"" key "\"[ \t\r\n]*:[ \t\r\n]*[{]")) {
                             start=RSTART+RLENGTH-1
                             depth=0
                             obj=""
